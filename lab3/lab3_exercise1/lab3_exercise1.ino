@@ -4,7 +4,7 @@ int green_pin = 11;
 
 //you will need to determine the value for dark
 //its unique to the lighting in your room
-int dark_threshold = 50;
+int dark_threshold = 80;
 
 bool isDark(){
   if (analogRead(A1)<dark_threshold) {
