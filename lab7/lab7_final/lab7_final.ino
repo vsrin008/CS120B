@@ -12,10 +12,10 @@ int song1[] = {
 NOTE_E4, NOTE_C5, NOTE_B1, NOTE_F3, NOTE_C4, 
 NOTE_A4, NOTE_A4, NOTE_GS5, NOTE_C5, NOTE_CS4, 
 NOTE_AS4, NOTE_C5, NOTE_DS4, NOTE_CS5, NOTE_GS4, 
-NOTE_C3, NOTE_E3, NOTE_DS5, NOTE_D4, NOTE_D3
+NOTE_C3, NOTE_E3, NOTE_DS5, NOTE_D4, NOTE_D3, -1
 };
 int song1_time[] = {
-2, 1, 2, 1, 1, 4, 8, 16, 8, 4, 4, 1, 8, 4, 2, 4, 4, 16, 4, 2
+2, 1, 2, 1, 1, 4, 8, 16, 8, 4, 4, 1, 8, 4, 2, 4, 4, 16, 4, 2, 1
 };
 
 // == Song 2 ==
@@ -24,11 +24,11 @@ int song2[] = {
   NOTE_FS5, NOTE_D2, NOTE_DS5, NOTE_G2, NOTE_B3, 
   NOTE_C2, NOTE_G5, NOTE_D6, NOTE_CS5, NOTE_AS4, 
   NOTE_DS6, NOTE_D3, NOTE_CS4, NOTE_E5, NOTE_DS6,
-   NOTE_E4, NOTE_B4, NOTE_F4, NOTE_E6, NOTE_DS4
+   NOTE_E4, NOTE_B4, NOTE_F4, NOTE_E6, NOTE_DS4, -1
 };
 
 int song2_time[] = {
-  2, 2, 4, 8, 1, 8, 4, 4, 16, 8, 2, 4, 16, 8, 2, 4, 16, 4, 8, 1
+  2, 2, 4, 8, 1, 8, 4, 4, 16, 8, 2, 4, 16, 8, 2, 4, 16, 4, 8, 1, 1
 };
 
 // == Song 3 == 
@@ -37,11 +37,11 @@ int song3[] = {
   NOTE_A5, NOTE_D4, NOTE_D6, NOTE_DS3, NOTE_G4, 
   NOTE_B2, NOTE_F2, NOTE_A3, NOTE_AS2, NOTE_B5, 
   NOTE_C6, NOTE_C3, NOTE_GS3, NOTE_G2, NOTE_FS5, 
-  NOTE_AS4, NOTE_GS2, NOTE_CS3, NOTE_C3, NOTE_AS2
+  NOTE_AS4, NOTE_GS2, NOTE_CS3, NOTE_C3, NOTE_AS2, -1
 };
 
 int song3_time[] = {
-  1, 2, 16, 4, 16, 2, 16, 1, 1, 2, 1, 8, 2, 16, 8, 1, 16, 4, 1, 2
+  1, 2, 16, 4, 16, 2, 16, 1, 1, 2, 1, 8, 2, 16, 8, 1, 16, 4, 1, 2, 1
 };
 
 
@@ -120,10 +120,12 @@ int direction = 0;
 int cursorPosition = 1;
 int selectedSong = -1;
 int sw = 10;
-int startSelected = 0;
 const unsigned long debounceDelay = 200; //200 ms debouncing
 unsigned long lastDebounceTime = 0; 
 unsigned long lastButtonPress = 0; 
+int bPos = 1;
+int paused = 1;
+int songEnd = 0;
 
 
 
@@ -147,8 +149,31 @@ int TickFct_LCDOutput(int state) {
       state = LO_MenuOptionA;
     break;
     case LO_MenuOptionA:
+      if (selectedSong !=-1 && cursorPosition == 4 && readButton()) {
+        state = LO_MenuOptionB;
+        Serial.print("Going to menu B with selection of Song ");
+        Serial.println(selectedSong);
+        paused=0;
+      if (selectedSong==1) {
+        LCDWriteLines("Playing", "Pause", "Song 1", "Play");
+      }
+      if (selectedSong==2) {
+        LCDWriteLines("Playing", "Pause", "Song 2", "Play");
+      }
+
+      if (selectedSong==3) {
+        LCDWriteLines("Playing", "Pause", "Song 3", "Play");
+      }
+
+      }
     break;
     case LO_MenuOptionB:
+      if (songEnd == 1) {
+        songEnd=0;
+        selectedSong = -1;
+        LCDWriteLines("Song 1", "Song 2", "Song 3", "Start");
+        state = LO_MenuOptionA;
+      }
     break;
   }
 
@@ -192,24 +217,41 @@ int TickFct_LCDOutput(int state) {
       } else if (cursorPosition == 4) {
         lcd.setCursor(7, 1); // Align with "Start"
         lcd.blink();
-        if(readButton()) {
-          state = LO_MenuOptionB;
-          Serial.print("Starting Song");
-          Serial.println(selectedSong);
+        if(readButton() && selectedSong != -1) {
+          paused = 0;
+          selectedSong = -1;
         }
       }
     break;
     case LO_MenuOptionB:
-      if (selectedSong==1) {
-        LCDWriteLines("Playing", "Pause", "Song 1", "Play");
-      }
-      if (selectedSong==2) {
-        LCDWriteLines("Playing", "Pause", "Song 2", "Play");
+      if (readButton()) { // This will clear selection when a new song is chosen
+        lcd.setCursor(5, 1);
+        lcd.print(" "); 
+        lcd.setCursor(12, 1);
+        lcd.print(" ");
       }
 
-      if (selectedSong==3) {
-        LCDWriteLines("Playing", "Pause", "Song 3", "Play");
+      if (bPos==1) {
+        lcd.setCursor(5, 1); 
+        lcd.blink();
+        if(readButton()) {
+          lcd.print("*"); 
+          paused = 1;
+          Serial.println("PAUSE");          
+        }       
       }
+
+      if (bPos==2) {
+        lcd.setCursor(12, 1); 
+        lcd.blink();
+        if(readButton()) {
+          lcd.print("*"); 
+          paused = 0;
+          Serial.println("UNPAUSE");
+        }
+        
+      }
+      
 
     break;
   }
@@ -237,11 +279,13 @@ int TickFct_JoystickInput(int state) {
         int yinput = analogRead(A1);
         if (xinput < 400) { //left
           cursorPosition = cursorPosition - 2;
+          bPos = 1;
           Serial.println("Left");
           lastButtonPress = currentTime;
         }
         if (xinput > 600) { //right
           cursorPosition = cursorPosition + 2;
+          bPos = 2;
           Serial.println("Right");
           lastButtonPress = currentTime;
         }
@@ -259,7 +303,9 @@ int TickFct_JoystickInput(int state) {
 
       if (readButton()) {
         if (currentTime - lastDebounceTime > debounceDelay) {
-          selectedSong = cursorPosition;
+          if (cursorPosition !=4) {
+            selectedSong = cursorPosition;
+          }
           lastDebounceTime = currentTime;
         }
       }      
@@ -280,11 +326,22 @@ int TickFct_SoundOutput(int state) {
       state = SO_SoundOn;
     break;
     case SO_SoundOn:
-      if(counter >= song1_time[note]) {
-         state = SO_SoundOff;
-         note++;
-         counter = 0;
-         note = note % 20;
+      if (selectedSong != -1 && !paused) {
+        if(song1[note] == -1 || song2[note] == -1 || song3[note] == -1) { // Song ended
+            note = 0; // Reset note counter
+            Serial.print("End of Song ");
+            Serial.println(selectedSong);
+            selectedSong = -1; // Deselect the song
+            paused = 1; // Ensure pause state
+            songEnd = 1;
+            state = SO_init; // Go back to initial state
+            break;
+        }
+        if(counter >= song1_time[note]) {
+          state = SO_SoundOff;
+          note++;
+          counter = 0;
+        }
       }
     break;
     case SO_SoundOff:
@@ -294,13 +351,27 @@ int TickFct_SoundOutput(int state) {
   }
    switch (state) { // State Actions
     case SO_SoundOn:
-      tone(buzzer, song1[note], periodSoundOutput * song1_time[note]);
-      counter++;
+      if (selectedSong != -1 && !paused) {
+        switch (selectedSong) {
+          case 1: 
+            tone(buzzer, song1[note], periodSoundOutput * song1_time[note]);
+            Serial.println("Playing song1");
+            break;
+          case 2:
+            tone(buzzer, song2[note], periodSoundOutput * song2_time[note]);
+            Serial.println("Playing song2");
+            break;
+          case 3:
+            tone(buzzer, song3[note], periodSoundOutput * song3_time[note]);
+            Serial.println("Playing song3");
+            break;
+        }
+        counter++;
+      }
     break;
     case SO_SoundOff:
       noTone(buzzer);
     break;
-
   }
   return state;
 }
@@ -349,6 +420,7 @@ void setup() {
   // put your setup code here, to run once:
   InitializeTasks();
   pinMode(sw, INPUT_PULLUP);
+  pinMode(buzzer, OUTPUT);
   TimerSet(tasksPeriodGCD);
   TimerOn();
   Serial.begin(9600);
@@ -361,5 +433,4 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   // Task Scheduler with Timer.h
-  
 }
