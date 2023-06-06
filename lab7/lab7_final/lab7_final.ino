@@ -1,3 +1,6 @@
+//Inspiration for songs from here: https://github.com/robsoncouto/arduino-songs
+//Had to make some changes so some songs do not sound perfect, but are mostly recognizable (in my opinion)
+
 #include "Timer.h"
 #include "LiquidCrystal.h"
 #include "pitches.h"
@@ -5,42 +8,55 @@
 // Sound Variables  
 int buzzer = 8;
 
-// == Song 1 ==
+// Song 1: Green Hill Zone
 int song1[] = {
-NOTE_E4, NOTE_C5, NOTE_B1, NOTE_F3, NOTE_C4, 
-NOTE_A4, NOTE_A4, NOTE_GS5, NOTE_C5, NOTE_CS4, 
-NOTE_AS4, NOTE_C5, NOTE_DS4, NOTE_CS5, NOTE_GS4, 
-NOTE_C3, NOTE_E3, NOTE_DS5, NOTE_D4, NOTE_D3, -1
+  NOTE_E4, NOTE_E4, 0, NOTE_E4, 0, NOTE_C4, NOTE_E4, NOTE_G4,
+  NOTE_G4, 0, NOTE_A4, 0, NOTE_A4, NOTE_G4, NOTE_E4,
+  NOTE_G4, NOTE_E4, 0, NOTE_A4, 0, NOTE_B4, NOTE_B4, NOTE_C5, NOTE_C5, NOTE_B4, NOTE_A4, NOTE_A4,
+  NOTE_A4, NOTE_B4, NOTE_A4, NOTE_G4, NOTE_E4, NOTE_G4, NOTE_A4, NOTE_G4, NOTE_E4, -1
 };
+
 int song1_time[] = {
-2, 1, 2, 1, 1, 4, 8, 16, 8, 4, 4, 1, 8, 4, 2, 4, 4, 16, 4, 2, 1
+  8, 8, 8, 8, 8, 8, 8, 16,
+  16, 8, 8, 8, 8, 8, 16,
+  16, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 16,
+  16, 8, 8, 8, 8, 8, 8, 8, 8, 8
 };
 
-// == Song 2 ==
 
+//Song 2: Happy Birthday
 int song2[] = {
-  NOTE_FS5, NOTE_D2, NOTE_DS5, NOTE_G2, NOTE_B3, 
-  NOTE_C2, NOTE_G5, NOTE_D6, NOTE_CS5, NOTE_AS4, 
-  NOTE_DS6, NOTE_D3, NOTE_CS4, NOTE_E5, NOTE_DS6,
-   NOTE_E4, NOTE_B4, NOTE_F4, NOTE_E6, NOTE_DS4, -1
+  NOTE_C4, NOTE_C4, NOTE_D4, NOTE_C4, NOTE_F4, NOTE_E4,
+  NOTE_C4, NOTE_C4, NOTE_D4, NOTE_C4, NOTE_G4, NOTE_F4,
+  NOTE_C4, NOTE_C4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_E4, NOTE_D4,
+  NOTE_AS4, NOTE_AS4, NOTE_A4, NOTE_F4, NOTE_G4, NOTE_F4, -1
 };
 
 int song2_time[] = {
-  2, 2, 4, 8, 1, 8, 4, 4, 16, 8, 2, 4, 16, 8, 2, 4, 16, 4, 8, 1, 1
+  8, 8, 4, 4, 4, 2,
+  8, 8, 4, 4, 4, 2,
+  8, 8, 4, 4, 4, 4, 2,
+  8, 8, 4, 4, 4, 2
 };
 
-// == Song 3 == 
 
+//Song 3: Lost Woods
 int song3[] = {
-  NOTE_A5, NOTE_D4, NOTE_D6, NOTE_DS3, NOTE_G4, 
-  NOTE_B2, NOTE_F2, NOTE_A3, NOTE_AS2, NOTE_B5, 
-  NOTE_C6, NOTE_C3, NOTE_GS3, NOTE_G2, NOTE_FS5, 
-  NOTE_AS4, NOTE_GS2, NOTE_CS3, NOTE_C3, NOTE_AS2, -1
+  NOTE_F4, NOTE_A4, NOTE_B4, NOTE_F4, NOTE_A4, NOTE_B4,
+  NOTE_E4, NOTE_E4, NOTE_D4, NOTE_E4, NOTE_G4, 
+  NOTE_A4, NOTE_G4, NOTE_E4, NOTE_A4, NOTE_B4, 
+  NOTE_A4, NOTE_G4, NOTE_E4, NOTE_D4, NOTE_E4, NOTE_F4, NOTE_E4, NOTE_D4, -1
 };
 
 int song3_time[] = {
-  1, 2, 16, 4, 16, 2, 16, 1, 1, 2, 1, 8, 2, 16, 8, 1, 16, 4, 1, 2, 1
+  4, 4, 2, 4, 4, 1,
+  4, 4, 4, 4, 2,
+  4, 4, 4, 4, 1,
+  4, 4, 4, 4, 4, 4, 4, 
 };
+
+
+
 
 
 // LCD variables
@@ -281,18 +297,18 @@ int TickFct_JoystickInput(int state) {
           Serial.println("Left");
           lastButtonPress = currentTime;
         }
-        if (xinput > 600) { //right
+        else if (xinput > 600) { //right
           cursorPosition = cursorPosition + 2;
           bPos = 2;
           Serial.println("Right");
           lastButtonPress = currentTime;
         }
-        if (yinput > 600) { //up
+        else if (yinput > 550) { //up
           cursorPosition--; // Moves cursor up
           Serial.println("Up");
           lastButtonPress = currentTime;
         }
-        if (yinput < 400) { //down
+        else if (yinput < 400) { //down
           cursorPosition++; // Moves cursor down
           Serial.println("Down");
           lastButtonPress = currentTime;
