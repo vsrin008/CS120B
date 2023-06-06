@@ -1,7 +1,5 @@
 #include "Timer.h"
 #include "LiquidCrystal.h"
-// Depending on the LiquidCrystal library you are able to install, it might be:
-// #include "LiquidCrystal.h"
 #include "pitches.h"
 
 // Sound Variables  
@@ -310,7 +308,7 @@ int TickFct_JoystickInput(int state) {
         }
       }      
 
-      cursorPosition = constrain(cursorPosition, 1, 4); // Ensures cursor stays within menu options (1-4 for 4 options).
+      cursorPosition = constrain(cursorPosition, 1, 4); // Ensures cursor stays within menu options (1-4 for 4 options). Not exactly sure how this operates or if it will cause issues in edge cases, but works in my use.
     break;
   }
   return state;
@@ -332,9 +330,9 @@ int TickFct_SoundOutput(int state) {
             Serial.print("End of Song ");
             Serial.println(selectedSong);
             selectedSong = -1; // Deselect the song
-            paused = 1; // Ensure pause state
+            paused = 1; 
             songEnd = 1;
-            state = SO_init; // Go back to initial state
+            state = SO_init;
             break;
         }
         if(counter >= song1_time[note]) {
@@ -389,7 +387,6 @@ int TickFct_Controller(int state) {
   }
   return state;
 }
-
 
 
 void InitializeTasks() {
