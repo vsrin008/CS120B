@@ -1,5 +1,4 @@
 //Inspiration for songs from here: https://github.com/robsoncouto/arduino-songs
-//Had to make some changes so some songs do not sound perfect, but are mostly recognizable (in my opinion)
 
 #include "Timer.h"
 #include "LiquidCrystal.h"
@@ -8,7 +7,7 @@
 // Sound Variables  
 int buzzer = 8;
 
-// Song 1: Green Hill Zone
+// Song 1
 int song1[] = {
   NOTE_E4, NOTE_E4, 0, NOTE_E4, 0, NOTE_C4, NOTE_E4, NOTE_G4,
   NOTE_G4, 0, NOTE_A4, 0, NOTE_A4, NOTE_G4, NOTE_E4,
@@ -17,14 +16,14 @@ int song1[] = {
 };
 
 int song1_time[] = {
-  8, 8, 8, 8, 8, 8, 8, 16,
-  16, 8, 8, 8, 8, 8, 16,
-  16, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 16,
-  16, 8, 8, 8, 8, 8, 8, 8, 8, 8
+  2, 2, 2, 2, 2, 2, 2, 4,
+  4, 2, 2, 2, 2, 2, 4,
+  4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4,
+  4, 2, 2, 2, 2, 2, 2, 2, 2, 2
 };
 
 
-//Song 2: Happy Birthday
+//Song 2
 int song2[] = {
   NOTE_C4, NOTE_C4, NOTE_D4, NOTE_C4, NOTE_F4, NOTE_E4,
   NOTE_C4, NOTE_C4, NOTE_D4, NOTE_C4, NOTE_G4, NOTE_F4,
@@ -36,11 +35,11 @@ int song2_time[] = {
   8, 8, 4, 4, 4, 2,
   8, 8, 4, 4, 4, 2,
   8, 8, 4, 4, 4, 4, 2,
-  8, 8, 4, 4, 4, 2
+  8, 8, 4, 4, 4, 4
 };
 
 
-//Song 3: Lost Woods
+//Song 3
 int song3[] = {
   NOTE_F4, NOTE_A4, NOTE_B4, NOTE_F4, NOTE_A4, NOTE_B4,
   NOTE_E4, NOTE_E4, NOTE_D4, NOTE_E4, NOTE_G4, 
